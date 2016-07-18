@@ -1,9 +1,12 @@
+byte means 32 bits.
+4 nibbles per byte.
+
 opcode number, symbol, what it does
 0 print prints the first few things on the stack.
 1 + ( A B -- C )
 2 * ( A B -- C )
 3 - ( A B -- C )
-4 * ( A B -- C )
+4 / ( A B -- C )
 5 % ( A B -- C )
 6 >@ ( A -- ) moves the top of the stack to the alt stack
 7 @> ( -- A ) moves the top of the alt stack to the stack
@@ -20,10 +23,10 @@ opcode number, symbol, what it does
 18 recurse puts the address of the current function to the top of the stack.
 19 call calls the function on the top of the stack.
 20 push ( N -- ) pushes N bytes to stack
-21 push 1 byte to stack
-22 push 2 bytes to stack
-23 push 3 bytes to stack
-24 push 4 bytes to stack
+21 pushn 1 nibble to stack, store it as a byte
+22 push 1 byte to stack
+23 push 2 bytes to stack
+24 push 3 bytes to stack
 25 if
 26 else
 27 then
@@ -31,3 +34,4 @@ opcode number, symbol, what it does
 29 > ( X Y -- T )
 30 < ( X Y -- T )
 31 drop ( A -- )
+32 finish stop the program and exit.
