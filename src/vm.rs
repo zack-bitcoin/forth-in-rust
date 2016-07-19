@@ -58,11 +58,17 @@ fn forth2(mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec<(u32, u32
 fn word(x: u8, c: Vec<u8>, s: Vec<u32>, a: Vec<u32>, v: Vec<(u32, u32)>, f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
     //println!("word {}", x);
     if (x%2) == 0u8 {
-        return even_word(x, c, s, a, v, f);
+        if (x%4) == 0u8 {
+            return even_even_word(x, c, s, a, v, f);
+        }
+        return even_odd_word(x, c, s, a, v, f);
     }
-    return odd_word(x, c, s, a, v, f);
+    if (x%4) == 1u8 {
+        return odd_even_word(x, c, s, a, v, f);
+    }
+    return odd_odd_word(x, c, s, a, v, f);
 }
-fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec<(u32, u32)>, mut f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
+fn even_even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, a: Vec<u32>, mut v: Vec<(u32, u32)>, mut f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
     if x == 0u8 { //print
         if s.len() > 0 {
             println!("{}", s[s.len()-1]);
@@ -75,33 +81,16 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
         }
         return (c, s, a, v, f);
     }
-    if x == 2u8 { // *
-        let b = s.pop().unwrap();
-        let d = s.pop().unwrap();
-        s.push(b*d);
-        return (c, s, a, v, f);
-    }
     if x == 4u8 { // /
         let b = s.pop().unwrap();
         let d = s.pop().unwrap();
         s.push(b/d);
         return (c, s, a, v, f);
     }
-    if x == 6u8 { // >r
-        let b = s.pop().unwrap();
-        a.push(b);
-        return (c, s, a, v, f);
-    }
     if x == 8u8 { // !
         let name = s.pop().unwrap();
         let value = s.pop().unwrap();
         v.push((name, value));
-        return (c, s, a, v, f);
-    }
-    if x == 10u8 { //dup
-        let ab = s.pop().unwrap();
-        s.push(ab);
-        s.push(ab);
         return (c, s, a, v, f);
     }
     if x == 12u8 { //rot
@@ -111,15 +100,6 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
         s.push(y);
         s.push(z);
         s.push(xa);
-        return (c, s, a, v, f);
-    }
-    if x == 14u8 { // 2dup
-        let x = s.pop().unwrap();
-        let y = s.pop().unwrap();
-        s.push(y);
-        s.push(x);
-        s.push(y);
-        s.push(x);
         return (c, s, a, v, f);
     }
     if x == 16u8 { // :
@@ -139,15 +119,6 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
             s.push(d as u32);
             b -=1;
         }
-        return (c, s, a, v, f);
-    }
-    if x == 22u8 { //push1
-        let z = c.pop().unwrap() as u32;
-        let b = c.pop().unwrap() as u32;
-        let d = c.pop().unwrap() as u32;
-        let e = c.pop().unwrap() as u32;
-        let y = (((((e * 256) + d) * 256) + b) * 256) + z;
-        s.push(y);
         return (c, s, a, v, f);
     }
     if x == 24u8 { //push3
@@ -171,10 +142,6 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
         s.push(y);
         return (c, s, a, v, f);
     }
-    if x == 26u8 { // else
-        let (_, c) = split(c, 27);
-        return (c, s, a, v, f);
-    }
     if x == 28u8 { // ==
         let y = s.pop().unwrap();
         let z = s.pop().unwrap();
@@ -185,6 +152,51 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
         s.push(0u32);
         return (c, s, a, v, f);
     }
+    if x == 32u8 { // finish
+        return (c, s, a, v, f);
+    }
+    return (c, s, a, v, f);
+}
+fn even_odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32, u32)>, f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
+    if x == 2u8 { // *
+        let b = s.pop().unwrap();
+        let d = s.pop().unwrap();
+        s.push(b*d);
+        return (c, s, a, v, f);
+    }
+    if x == 6u8 { // >r
+        let b = s.pop().unwrap();
+        a.push(b);
+        return (c, s, a, v, f);
+    }
+    if x == 10u8 { //dup
+        let ab = s.pop().unwrap();
+        s.push(ab);
+        s.push(ab);
+        return (c, s, a, v, f);
+    }
+    if x == 14u8 { // 2dup
+        let x = s.pop().unwrap();
+        let y = s.pop().unwrap();
+        s.push(y);
+        s.push(x);
+        s.push(y);
+        s.push(x);
+        return (c, s, a, v, f);
+    }
+    if x == 22u8 { //push1
+        let z = c.pop().unwrap() as u32;
+        let b = c.pop().unwrap() as u32;
+        let e = c.pop().unwrap() as u32;
+        let d = c.pop().unwrap() as u32;
+        let y = (((((d * 256) + e) * 256) + b) * 256) + z;
+        s.push(y);
+        return (c, s, a, v, f);
+    }
+    if x == 26u8 { // else
+        let (_, c) = split(c, 27);
+        return (c, s, a, v, f);
+    }
     if x == 30u8 { // <
         let y = s.pop().unwrap();
         let z = s.pop().unwrap();
@@ -193,9 +205,6 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
             return (c, s, a, v, f);
         }
         s.push(0u32);
-        return (c, s, a, v, f);
-    }
-    if x == 32u8 { // finish
         return (c, s, a, v, f);
     }
     if x == 34u8 { // or
@@ -210,17 +219,11 @@ fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec
     }        
     return (c, s, a, v, f);
 }    
-fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32, u32)>, f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
+fn odd_even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32, u32)>, f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
     if x == 1u8 { // +
         let b = s.pop().unwrap();
         let d = s.pop().unwrap();
         s.push(b+d);
-        return (c, s, a, v, f);
-    }
-    if x == 3u8 { // -
-        let b = s.pop().unwrap();
-        let d = s.pop().unwrap();
-        s.push(d-b);
         return (c, s, a, v, f);
     }
     if x == 5u8 { // %
@@ -229,22 +232,10 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
         s.push( d % b );
         return (c, s, a, v, f);
     }
-    if x == 7u8 { // r>
-        let b = a.pop().unwrap();
-        s.push(b);
-        return (c, s, a, v, f);
-    }
     if x == 9u8 { // @
         let name = s.pop().unwrap();
         let (value, v) = get_value(v, name);
         s.push(value);
-        return (c, s, a, v, f);
-    }
-    if x == 11u8 { // swap
-        let y = s.pop().unwrap();
-        let u = s.pop().unwrap();
-        s.push(y);
-        s.push(u);
         return (c, s, a, v, f);
     }
     if x == 13u8 { // tuck
@@ -254,6 +245,56 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
         s.push(z);
         s.push(x);
         s.push(y);
+        return (c, s, a, v, f);
+    }
+    if x == 21u8 { //pushn
+        let y = c.pop().unwrap();
+        s.push(y as u32);
+        return (c, s, a, v, f);
+    }
+    if x == 25u8 { //if
+        let y = s.pop().unwrap();
+        if y == 0 {
+            let (_, c) = split(c, 26);
+            return (c, s, a, v, f);
+        }
+        return (c, s, a, v, f);
+    }
+    if x == 29u8 { // >
+        let y = s.pop().unwrap();
+        let z = s.pop().unwrap();
+        if z > y {
+            s.push(1u32);
+            return (c, s, a, v, f);
+        }
+        s.push(0u32);
+        return (c, s, a, v, f);
+    }            
+    if x == 33u8 { // r@
+        let z = a.pop().unwrap();
+        s.push(z);
+        a.push(z);
+        return (c, s, a, v, f);
+    }
+    return (c, s, a, v, f);
+}
+fn odd_odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32, u32)>, f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
+    if x == 3u8 { // -
+        let b = s.pop().unwrap();
+        let d = s.pop().unwrap();
+        s.push(d-b);
+        return (c, s, a, v, f);
+    }
+    if x == 7u8 { // r>
+        let b = a.pop().unwrap();
+        s.push(b);
+        return (c, s, a, v, f);
+    }
+    if x == 11u8 { // swap
+        let y = s.pop().unwrap();
+        let u = s.pop().unwrap();
+        s.push(y);
+        s.push(u);
         return (c, s, a, v, f);
     }
     if x == 15u8 { // 2swap
@@ -273,11 +314,6 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
         let c = vec_append(value, c);
         return (c, s, a, v, f);
     }
-    if x == 21u8 { //pushn
-        let y = c.pop().unwrap();
-        s.push(y as u32);
-        return (c, s, a, v, f);
-    }
     if x == 23u8 { //push2
         let z = c.pop().unwrap() as u32;
         let b = c.pop().unwrap() as u32;
@@ -293,35 +329,11 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
         s.push(y);
         return (c, s, a, v, f);
     }
-    if x == 25u8 { //if
-        let y = s.pop().unwrap();
-        if y == 0 {
-            let (_, c) = split(c, 26);
-            return (c, s, a, v, f);
-        }
-        return (c, s, a, v, f);
-    }
     if x == 27u8 { //then
         return (c, s, a, v, f);
     }
-    if x == 29u8 { // >
-        let y = s.pop().unwrap();
-        let z = s.pop().unwrap();
-        if z > y {
-            s.push(1u32);
-            return (c, s, a, v, f);
-        }
-        s.push(0u32);
-        return (c, s, a, v, f);
-    }            
     if x == 31u8 { // drop
         s.pop();
-        return (c, s, a, v, f);
-    }
-    if x == 33u8 { // r@
-        let z = a.pop().unwrap();
-        s.push(z);
-        a.push(z);
         return (c, s, a, v, f);
     }
     if x == 35u8 { // and
@@ -355,7 +367,7 @@ fn get_function(f: Vec<(u8, Vec<u8>)>, n:u8) -> (Vec<(u8, Vec<u8>)>, Vec<u8>) {
         if f.len() == c {
             return (f, vec![]);
         }
-        let (name, func) = f[c].clone();//f.pop().unwrap();
+        let (name, func) = f[c].clone();
         if name == n {
             return (f, func);
         }
@@ -378,6 +390,7 @@ fn split2(mut c: Vec<u8>, mut d: Vec<u8>, s: u8) -> (Vec<u8>, Vec<u8>) {
 fn replace(old: u8, new: u8, mut v: Vec<u8>) -> Vec<u8> {
     let mut u = vec![];
     loop {
+
         if v.len() == 0 {
             break;
         }

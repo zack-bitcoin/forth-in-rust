@@ -1,0 +1,6 @@
+zack@iloSona:~/Hacking/rust/forth$ time ./target/release/vm 
+233168
+
+real	0m0.007s
+user	0m0.004s
+sys	0m0.000s

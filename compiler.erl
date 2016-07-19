@@ -58,10 +58,6 @@ is_in(A, [A|_]) -> true;
 is_in(A, [_|T]) -> is_in(A, T).
 add_spaces(B) -> add_spaces(B, <<"">>).
 add_spaces(<<"">>, B) -> B;
-%add_spaces(<<91:8, B/binary >>, Out) ->  % "["
-%    add_spaces(B, <<Out/binary, 32:8, 91:8, 32:8>>);
-%add_spaces(<<93:8, B/binary >>, Out) ->  % "]"
-%    add_spaces(B, <<Out/binary, 32:8, 93:8, 32:8>>);
 add_spaces(<<58:8, B/binary >>, Out) ->  % ":"
     add_spaces(B, <<Out/binary, 32:8, 58:8, 32:8>>);
 add_spaces(<<59:8, B/binary >>, Out) ->  % ";"
@@ -115,9 +111,6 @@ get_macros([<<"macro">>|[Name|R]], Functions) ->
     end;
 get_macros([], Functions) -> Functions;
 get_macros([_|T], Functions) -> get_macros(T, Functions).
-%get_functions2(Foo, R, Priv, Name, Functions) ->
-%    Signature = sign:sign(Foo, base64:decode(Priv)),
-%    get_functions3(Signature, R, Name, Functions).
 get_functions3(R, Name, Functions, ID) ->
     case dict:find(Name, Functions) of
 	error ->
@@ -130,19 +123,9 @@ get_functions3(R, Name, Functions, ID) ->
 	    X = okay
     end.
 get_functions(Words) -> get_functions(Words, dict:new(), 0).
-%get_functions([<<"macroSign">>|[Name|[<<"binary">>|[Priv|[<<"binary">>|[Hash|R]]]]]], Functions) -> 
-    %Make sure Name isn't on the restricted list.
-%    Foo = base64:decode(Hash),
-%    get_functions2(Foo, R, Priv, Name, Functions);
-%get_functions([<<"macroSign">>|[Name|[<<"binary">>|[Priv|[Hash|R]]]]], Functions) ->
-    %Make sure Name isn't on the restricted list.
-%    Foo = hd(to_opcodes([Hash], Functions, [])),
-%    get_functions2(Foo, R, Priv, Name, Functions);
 get_functions([<<":">>|[Name|R]], Functions, ID) ->
     %Make sure Name isn't on the restricted list.
     {_Code, T} = split(<<";">>, R),
-    %Opcodes = to_opcodes(Code, Functions, []),
-    %S = hash:doit(Opcodes),
     get_functions3(T, Name, Functions, ID);
 get_functions([], Functions, _) -> Functions;
 get_functions([_|T], Functions, ID) -> get_functions(T, Functions, ID).
@@ -152,20 +135,10 @@ split(C, [D|B], Out) ->
     split(C, B, [D|Out]).
 remove_functions(Words) -> rad(Words, []).
 rad([], Out) -> flip(Out);
-%rad([<<":">>|[_|T]], Out) -> rad(T, [<<":">>|Out]);
 rad([<<":">>|T], Out) -> rad(T, [<<":">>|Out]);
 rad([<<"macroSign">>|[_|[<<"binary">>|[_|[<<"binary">>|[_|T]]]]]], Out) -> rad(T, Out);
 rad([<<"macroSign">>|[_|[<<"binary">>|[_|[_|T]]]]], Out) -> rad(T, Out);
 rad([X|T], Out) -> rad(T, [X|Out]).
-%apply_functions(Words, Functions) ->    
-%    rnf(Words, Functions, []).
-%rnf([], _, Out) -> flip(Out);
-%rnf([H|T], Functions, Out) -> 
-%    case dict:find(H, Functions) of
-%	error -> rnf(T, Functions, [H|Out]);
-%	{ok, Val} -> rnf(T, Functions, [Val|Out])
-%    end.
-%b2i(X) -> list_to_integer(binary_to_list(X)).
 to_opcodes([<<"print">>|R], F, Out) ->
     to_opcodes(R, F, [0|Out]);
 to_opcodes([<<"+">>|R], F, Out) ->
