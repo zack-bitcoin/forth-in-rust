@@ -3,10 +3,10 @@
 
 : g if r@ + else then ;
 
-: f r@ print pushn 0 == if else
+: f r@ pushn 0 == if else
   r@ pushn 3 %  pushn 0 ==
   r@ pushn 5 % pushn 0 ==
   or pushn g call
   r> pushn 1 - >r pushn recurse call then ;
-push1 231 3 0 0 print >r pushn 0 pushn f call print
+push1 231 3 0 0 >r pushn 0 pushn f call print
 ( pushn 9 >r pushn 0 pushn f call print )

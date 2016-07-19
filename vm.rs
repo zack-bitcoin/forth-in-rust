@@ -46,7 +46,7 @@ fn forth2(mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec<(u32, u32
         if d == 32u8 {
             return s;
         }
-        let y = word(d.clone(), c.clone(), s.clone(), a.clone(), v.clone(), f.clone());
+        let y = word(d, c, s, a, v, f);
         let (c0, s0, a0, v0, f0) = y;
         c = c0;
         s = s0;

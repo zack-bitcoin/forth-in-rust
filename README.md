@@ -7,7 +7,7 @@ an implementation of the forth programming language written in rust.
 you can compile the vm with rustc like this:
 
 ```
-rustc vm.rs
+rustc -O vm.rs
 ```
 
 There are a [couple](power.fs) [examples](code.fs) of forth code that compiles correctly.
