@@ -64,18 +64,14 @@ fn word(x: u8, c: Vec<u8>, s: Vec<u32>, a: Vec<u32>, v: Vec<(u32, u32)>, f: Vec<
 }
 fn even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec<(u32, u32)>, mut f: Vec<(u8, Vec<u8>)>) -> (Vec<u8>, Vec<u32>, Vec<u32>, Vec<(u32, u32)>, Vec<(u8, Vec<u8>)>) {
     if x == 0u8 { //print
-        let mut sc = s.clone();
-        if sc.len() > 0 {
-            let z = sc.pop().unwrap();
-            println!("{}", z);
+        if s.len() > 0 {
+            println!("{}", s[s.len()-1]);
         }
-        if sc.len() > 1 {
-            let z = sc.pop().unwrap();
-            println!("{}", z);
+        if s.len() > 1 {
+            println!("{}", s[s.len()-2]);
         }
-        if sc.len() > 2 {
-            let z = sc.pop().unwrap();
-            println!("{}", z);
+        if s.len() > 2 {
+            println!("{}", s[s.len()-3]);
         }
         return (c, s, a, v, f);
     }
@@ -240,7 +236,7 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
     }
     if x == 9u8 { // @
         let name = s.pop().unwrap();
-        let value = get_value(v.clone(), name);
+        let (value, v) = get_value(v, name);
         s.push(value);
         return (c, s, a, v, f);
     }
@@ -273,7 +269,7 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
     }
     if x == 19u8 { // call
         let name = s.pop().unwrap();
-        let value = get_function(f.clone(), name as u8);
+        let (f, value) = get_function(f, name as u8);
         let c = vec_append(value, c);
         return (c, s, a, v, f);
     }
@@ -340,27 +336,30 @@ fn odd_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, v: Vec<(u32
     }
     return (c, s, a, v, f);
 }    
-fn get_value(mut v: Vec<(u32, u32)>, n: u32) -> u32 {
+fn get_value(v: Vec<(u32, u32)>, n: u32) -> (u32, Vec<(u32, u32)>) {
+    let mut c = 0;
     loop {
-        if v.len() == 0 {
-            return 0;
+        if v.len() == c {
+            return (0, v);
         }
-        let (name, value) = v.pop().unwrap();
+        let (name, value) = v[c];
         if name == n {
-            return value;
+            return (value, v);
         }
+        c+=1;
     }
 }
-fn get_function(mut f: Vec<(u8, Vec<u8>)>, n:u8) -> Vec<u8> {
+fn get_function(f: Vec<(u8, Vec<u8>)>, n:u8) -> (Vec<(u8, Vec<u8>)>, Vec<u8>) {
+    let mut c = 0;
     loop {
-        if f.len() == 0 {
-            return vec![];
+        if f.len() == c {
+            return (f, vec![]);
         }
-        let (name, func) = f.pop().unwrap();
+        let (name, func) = f[c].clone();//f.pop().unwrap();
         if name == n {
-            return func;
+            return (f, func);
         }
-
+        c+=1;
     }
 }
 fn split(c: Vec<u8>, s: u8) -> (Vec<u8>, Vec<u8>) {
