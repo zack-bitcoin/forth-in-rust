@@ -7,8 +7,8 @@ doit(X) ->
     {ok, A} = file:read_file(X),
     B = compile(A),
     file:write_file(?out, B),
-    io:fwrite(os:cmd("./vm")).
-test() -> doit("power.fs").
+    io:fwrite(os:cmd("./target/release/vm")).
+test() -> doit("examples/power.fs").
 compile(A) ->
     B = << <<" ">>/binary, A/binary, <<" \n">>/binary>>,
     C = remove_comments(B),

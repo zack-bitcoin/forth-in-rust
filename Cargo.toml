@@ -1,0 +1,9 @@
+[package]
+name = "forth-rs"
+version = "0.1.0"
+authors = ["zack <zack.bitcoin@gmail.com>"]
+
+[dependencies]
+
+[[bin]]
+name = "vm"
