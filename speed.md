@@ -40,7 +40,7 @@ erlang is measuring microseconds, so that is the same as
 The rust version was
 0.004
 
-So the rust version is 6.25x faster at solving the first project euler problem
+So the rust version is 6.25 times faster at solving this problem.
 
 The problem being solved was the first project euler problem which is:
 If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
