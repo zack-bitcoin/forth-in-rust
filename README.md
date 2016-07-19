@@ -17,4 +17,7 @@ to try running the code, open erlang interpreter with `erl`
 ```
 1> compiler:doit("power.fs").
 "2048\n"
+
+2> compiler:doit("euler001.fs"). %takes several minutes
+"223168\n"
 ```

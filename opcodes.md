@@ -8,8 +8,8 @@ opcode number, symbol, what it does
 3 - ( A B -- C )
 4 / ( A B -- C )
 5 % ( A B -- C )
-6 >@ ( A -- ) moves the top of the stack to the alt stack
-7 @> ( -- A ) moves the top of the alt stack to the stack
+6 >r ( A -- ) moves the top of the stack to the alt stack
+7 r> ( -- A ) moves the top of the alt stack to the stack
 8 ! ( A B -- ) stores the value A under name B.
 9 @ ( B -- ) recalls a value from memory
 10 dup ( A -- A A )
@@ -35,3 +35,6 @@ opcode number, symbol, what it does
 30 < ( X Y -- T )
 31 drop ( A -- )
 32 finish stop the program and exit.
+33 r@ ( -- A ) copy the top of the alt stack onto the stack
+34 or ( A B -- C ) logical or
+35 and ( A B -- C ) logical and

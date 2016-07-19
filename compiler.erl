@@ -8,8 +8,8 @@ doit(X) ->
     B = compile(A),
     %io:fwrite(hd(B)),
     %io:fwrite(B),
-    file:write_file(?out, B),
-    os:cmd("./vm ").
+    file:write_file(?out, B).
+    %os:cmd("./vm ").
 
 test() ->
     doit("power.fs").
@@ -183,9 +183,9 @@ to_opcodes([<<"/">>|R], F, Out) ->
     to_opcodes(R, F, [4|Out]);
 to_opcodes([<<"%">>|R], F, Out) ->
     to_opcodes(R, F, [5|Out]);
-to_opcodes([<<">@">>|R], F, Out) ->
+to_opcodes([<<">r">>|R], F, Out) ->
     to_opcodes(R, F, [6|Out]);
-to_opcodes([<<"@>">>|R], F, Out) ->
+to_opcodes([<<"r>">>|R], F, Out) ->
     to_opcodes(R, F, [7|Out]);
 to_opcodes([<<"!">>|R], F, Out) ->
     to_opcodes(R, F, [8|Out]);
@@ -235,6 +235,16 @@ to_opcodes([<<"<">>|R], F, Out) ->
     to_opcodes(R, F, [30|Out]);
 to_opcodes([<<"drop">>|R], F, Out) ->
     to_opcodes(R, F, [31|Out]);
+to_opcodes([<<"stop">>|R], F, Out) ->
+    to_opcodes(R, F, [32|Out]);
+to_opcodes([<<"r@">>|R], F, Out) ->
+    to_opcodes(R, F, [33|Out]);
+to_opcodes([<<"or">>|R], F, Out) ->
+    to_opcodes(R, F, [34|Out]);
+to_opcodes([<<"and">>|R], F, Out) ->
+    to_opcodes(R, F, [35|Out]);
+to_opcodes([<<"xor">>|R], F, Out) ->
+    to_opcodes(R, F, [36|Out]);
 to_opcodes([I|R], F, Out) when (is_integer(I) and (I > -1)) ->
     to_opcodes(R, F, [I|Out]);
 to_opcodes([], _, Out) -> flip(Out);
