@@ -12,12 +12,20 @@ rustc vm.rs
 
 There are a [couple](power.fs) [examples](code.fs) of forth code that compiles correctly.
 
-to try running the code, open erlang interpreter with `erl`
+to compile the code, open erlang interpreter with `erl`
+Now you can compile the compiler. It was written in erlang.
 
 ```
-1> compiler:doit("power.fs").
-"2048\n"
+1> c(compiler).
+{ok,compiler)
+```
 
-2> compiler:doit("euler001.fs"). %takes several minutes
-"223168\n"
+now that the compiler is compiled, you can use it to compile forth code, like the "power.fs" file.
+After it is compiled, erlang uses "vm" to run the code, and displays the answer.
+
+```
+2> compiler:doit("power.fs").
+2048
+ok
+3>
 ```
