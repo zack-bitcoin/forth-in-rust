@@ -4,28 +4,20 @@ An implementation of the forth programming language written in rust.
 
 [The opcodes are documented](opcodes.md)
 
+The [compiler is an erlang compiler from a previous project](erlang_compiler.md). All the compiled code is provided, you don't need erlang to test the vm. 
+
 You can compile the vm with cargo like this:
 
 ```sh
 $ cargo build --release
 ```
 
-There are a [couple examples](examples) of forth code that compiles correctly.
+There are a [couple examples](examples) of compiled forth code with suffix ".bytes"
 
-To compile the code, open erlang interpreter with `erl`
-Now you can compile the compiler. It was written in erlang.
-
-```
-1> c(compiler).
-{ok,compiler)
-```
-
-Now when the compiler is compiled, you can use it to compile forth code, like the "power.fs" file.
-After it is compiled, erlang uses "vm" to run the code, and displays the answer.
+Try running one like this:
 
 ```
-2> compiler:doit("examples/power.fs").
-2048
-ok
-3>
+./target/release/vm examples/euler001.bytes
 ```
+
+

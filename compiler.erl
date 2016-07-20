@@ -3,11 +3,12 @@
 
 -define(out, "compiled.bytes").
 
-doit(X) ->
+doit(X) -> doit(X, ?out).
+doit(X, Y) ->
     {ok, A} = file:read_file(X),
     B = compile(A),
-    file:write_file(?out, B),
-    io:fwrite(os:cmd("./target/release/vm")).
+    file:write_file(Y, B).
+    %io:fwrite(os:cmd("./target/release/vm")).
 test() -> doit("examples/power.fs").
 compile(A) ->
     B = << <<" ">>/binary, A/binary, <<" \n">>/binary>>,

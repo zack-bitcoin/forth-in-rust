@@ -1,1 +1,1 @@
-pushn 5 pushn 5 pushn 1 + *
+pushn 5 pushn 5 pushn 1 + * print

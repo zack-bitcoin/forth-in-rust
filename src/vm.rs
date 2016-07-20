@@ -3,9 +3,17 @@ use std::error::Error;
 use std::io::prelude::*;
 use std::fs::File;
 use std::path::Path;
+use std::env;
 
 fn main() {
-    let path = Path::new("compiled.bytes");
+    let args: Vec<_> = env::args().collect();
+    if args.len() < 1 {
+        println!("filename not given");
+    }
+    //println!("{}", args[1]);
+    //let path = Path::new("compiled.bytes");
+    let x = args[1].clone();
+    let path = Path::new(&x);
     let mut file = match File::open(&path) {
         Ok(file) => file,
         Err(err) => panic!("couldn't open {}: {}", path.display(), err.description()),
@@ -29,27 +37,27 @@ fn flip2(mut i: Vec<u8>, mut o: Vec<u8>) -> Vec<u8> {
     }
     return o;
 }
-fn forth(c: Vec<u8>) -> Vec<u32> {
-    let c = flip(c);
-    let s: Vec<u32> = Vec::new();
-    let a: Vec<u32> = Vec::new();
-    let v = Vec::new();
-    let f = Vec::new();
-    return forth2(c, s, a, v, f);
+fn forth(code: Vec<u8>) -> Vec<u32> {
+    let c = flip(code);
+    let stack: Vec<u32> = Vec::new();
+    let alt_stack: Vec<u32> = Vec::new();
+    let variables = Vec::new();
+    let functions = Vec::new();
+    return forth2(c, stack, alt_stack, variables, functions);
 }
-fn forth2(mut c: Vec<u8>, mut s: Vec<u32>, mut a: Vec<u32>, mut v: Vec<(u32, u32)>, mut f: Vec<(u8, Vec<u8>)>) -> Vec<u32> {
+fn forth2(mut code: Vec<u8>, mut stack: Vec<u32>, mut a: Vec<u32>, mut v: Vec<(u32, u32)>, mut f: Vec<(u8, Vec<u8>)>) -> Vec<u32> {
     loop {
-        if c.len() == 0 {
-            return s;
+        if code.len() == 0 {
+            return stack;
         }
-        let d = c.pop().unwrap();
+        let d = code.pop().unwrap();
         if d == 32u8 {
-            return s;
+            return stack;
         }
-        let y = word(d, c, s, a, v, f);
+        let y = word(d, code, stack, a, v, f);
         let (c0, s0, a0, v0, f0) = y;
-        c = c0;
-        s = s0;
+        code = c0;
+        stack = s0;
         a = a0;
         v = v0;
         f = f0;
@@ -81,25 +89,25 @@ fn even_even_word(x: u8, mut c: Vec<u8>, mut s: Vec<u32>, a: Vec<u32>, mut v: Ve
         }
         return (c, s, a, v, f);
     }
-    if x == 4u8 { // /
+    if x == 4u8 { // / (division)
         let b = s.pop().unwrap();
         let d = s.pop().unwrap();
         s.push(b/d);
         return (c, s, a, v, f);
     }
-    if x == 8u8 { // !
+    if x == 8u8 { // ! (store value in variable)
         let name = s.pop().unwrap();
         let value = s.pop().unwrap();
         v.push((name, value));
         return (c, s, a, v, f);
     }
     if x == 12u8 { //rot
-        let xa = s.pop().unwrap();
+        let x = s.pop().unwrap();
         let y = s.pop().unwrap();
         let z = s.pop().unwrap();
         s.push(y);
         s.push(z);
-        s.push(xa);
+        s.push(x);
         return (c, s, a, v, f);
     }
     if x == 16u8 { // :
